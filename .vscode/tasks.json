@@ -1,0 +1,85 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "OpenOCD_stlink",
+            "type": "shell",
+            "command": "openocd",
+            "args": [
+                "-f",
+                "interface/stlink.cfg",
+                "-f",
+                "target/stm32f4x.cfg",
+                "-c",
+                // "init; reset halt; flash erase_sector 0 0 last",
+                "init; reset halt",
+                "-c",
+                "program build/make/foc_s.elf verify",
+                "-c", 
+                "reset run; exit"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            // 取消reset，防止进debug时运行
+            "label": "OpenOCD_debug",
+            "type": "shell",
+            "command": "openocd",
+            "args": [
+                "-f",
+                "interface/stlink.cfg",
+                "-f",
+                "target/stm32f4x.cfg",
+                "-c",
+                // "init; reset halt; flash erase_sector 0 0 last",
+                "init; reset halt",
+                "-c",
+                "program build/make/foc_s.elf verify exit"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "cmake-build",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-B",
+                "build/make",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "-G",
+                "Ninja"
+            ],
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "label": "ninja-build",
+            "type": "shell",
+            "command": "ninja",
+            "args": [
+                "-C",
+                "build/make"
+            ],
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "label": "cmake-clean",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build/make",
+                "--target",
+                "clean"
+            ],
+            "group": {
+                "kind": "build"
+            }
+        }
+    ]
+}

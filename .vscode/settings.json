@@ -1,0 +1,6 @@
+{
+    "cortex-debug.gdbPath": "E:/stm_env/armgcc/bin/arm-none-eabi-gdb",
+    "files.associations": {
+        "*.c": "c",
+    }
+}

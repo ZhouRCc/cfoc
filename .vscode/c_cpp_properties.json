@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Windows",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "Core/Inc",
+                "Drivers/STM32F4xx_HAL_Driver/Inc",
+                "Drivers/CMSIS/Device/ST/STM32F4xx/Include",
+                "Drivers/CMSIS/Include",
+                // "Middlewares/Third_Party/FreeRTOS/Source/include",
+                "Drivers/STM32F4xx_HAL_Driver/Inc/Legacy",
+                // "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2",
+                // "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F",
+                "User"
+            ],
+            "defines": [
+                "STM32F405xx",
+                "USE_HAL_DRIVER"
+            ],
+            "compilerPath": "E:/stm_env/armgcc/bin/arm-none-eabi-gcc.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++98",
+            "intelliSenseMode": "gcc-arm",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
