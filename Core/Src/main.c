@@ -24,7 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "arm_math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +45,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+float aaa = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,7 +91,7 @@ int main(void)
   MX_CAN1_Init();
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
-
+  aaa = arm_cos_f32(0.5f);
   /* USER CODE END 2 */
 
   /* Infinite loop */

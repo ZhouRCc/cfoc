@@ -14,7 +14,7 @@
                 // "init; reset halt; flash erase_sector 0 0 last",
                 "init; reset halt",
                 "-c",
-                "program build/make/foc_s.elf verify",
+                "program build/Debug/foc_s.elf verify",
                 "-c", 
                 "reset run; exit"
             ],
@@ -35,7 +35,7 @@
                 // "init; reset halt; flash erase_sector 0 0 last",
                 "init; reset halt",
                 "-c",
-                "program build/make/foc_s.elf verify exit"
+                "program build/Debug/foc_s.elf verify exit"
             ],
             "group": "build",
             "problemMatcher": []

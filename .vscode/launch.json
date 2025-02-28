@@ -6,7 +6,7 @@
     "configurations": [
         {
             "cwd": "${workspaceRoot}",
-            "executable": "${workspaceFolder}/build/make/foc_s.elf",
+            "executable": "${workspaceFolder}/build/Debug/foc_s.elf",
             "name": "Debug_OpenOCD",
             "request": "launch",
             "type": "cortex-debug",
