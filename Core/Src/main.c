@@ -25,6 +25,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "arm_math.h"
+#include "device/ano.h"
+#include "bsp/bsp_delay.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,7 +93,9 @@ int main(void)
   MX_CAN1_Init();
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
+  delay_init();
   aaa = arm_cos_f32(0.5f);
+  uint32_t bb = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -101,6 +105,18 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    for(int i = 0; i < 100; i++)
+    {
+      bb ++;
+      Ano_Send(1, bb);
+      delay_ms(10);
+    }
+    for(int i = 0; i < 100; i++)
+    {
+      bb --;
+      Ano_Send(1, bb);
+      delay_ms(10);
+    }
   }
   /* USER CODE END 3 */
 }
