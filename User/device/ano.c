@@ -21,12 +21,11 @@
 #include <stdarg.h>
 
 
-
-/******拆分数据字节，小端模式***/
-#define BYTE0(dwTemp)       (uint8_t)(dwTemp & 0xFF) 	 
-#define BYTE1(dwTemp)       (uint8_t)((dwTemp & 0xFF00)>>8)	 
-#define BYTE2(dwTemp)       (uint8_t)((dwTemp & 0xFF0000)>>16)
-#define BYTE3(dwTemp)       (uint8_t)((dwTemp & 0xFF0000)>>24)
+// 将数据强制转换为 uint32_t，然后拆分字节（小端模式）
+#define BYTE0(dwTemp)       (uint8_t)((*(uint32_t*)&(dwTemp)) & 0xFF)        // 低字节
+#define BYTE1(dwTemp)       (uint8_t)(((*(uint32_t*)&(dwTemp)) >> 8) & 0xFF)  // 第二字节
+#define BYTE2(dwTemp)       (uint8_t)(((*(uint32_t*)&(dwTemp)) >> 16) & 0xFF) // 第三字节
+#define BYTE3(dwTemp)       (uint8_t)(((*(uint32_t*)&(dwTemp)) >> 24) & 0xFF) // 高字节
 
 uint8_t BUFF[100];//缓冲区
 
@@ -93,6 +92,63 @@ void Ano_Send(uint8_t len, ...)
 
 }
 
+/**
+  * @brief          向匿名助手发送5个float数据
+  * @param[in]      5个float参数
+  * @note           float数据被乘以100后再转成int
+  * @retval         none
+  */
+void Ano_SendFloat(float f1,float f2,float f3,float f4,float f5)
+{
+    int i;
+    uint8_t sumcheck = 0;
+    uint8_t addcheck = 0;
+    uint8_t _cnt = 0;
+    uint16_t datelen = 5 * 4;
 
+
+
+    BUFF[_cnt++] = FRAME_HEADER;
+    BUFF[_cnt++] = 0x01;
+    BUFF[_cnt++] = ANO_ADDR;
+    BUFF[_cnt++] = 0xF2; // 灵活格式帧参数id为0xF1-0xFA
+    BUFF[_cnt++] = BYTE0(datelen);
+    BUFF[_cnt++] = BYTE1(datelen); // 数据长度
+
+    BUFF[_cnt++] = BYTE0(f1);
+    BUFF[_cnt++] = BYTE1(f1);
+    BUFF[_cnt++] = BYTE2(f1);
+    BUFF[_cnt++] = BYTE3(f1);
+
+	BUFF[_cnt++] = BYTE0(f2);
+    BUFF[_cnt++] = BYTE1(f2);
+    BUFF[_cnt++] = BYTE2(f2);
+    BUFF[_cnt++] = BYTE3(f2);
+
+	BUFF[_cnt++] = BYTE0(f3);
+    BUFF[_cnt++] = BYTE1(f3);
+    BUFF[_cnt++] = BYTE2(f3);
+    BUFF[_cnt++] = BYTE3(f3);
+
+	BUFF[_cnt++] = BYTE0(f4);
+    BUFF[_cnt++] = BYTE1(f4);
+    BUFF[_cnt++] = BYTE2(f4);
+    BUFF[_cnt++] = BYTE3(f4);
+
+	BUFF[_cnt++] = BYTE0(f5);
+    BUFF[_cnt++] = BYTE1(f5);
+    BUFF[_cnt++] = BYTE2(f5);
+    BUFF[_cnt++] = BYTE3(f5);
+
+    for(i = 0; i < datelen + 6; i++) 
+    {
+        sumcheck += BUFF[i];
+        addcheck += sumcheck;
+    }
+    BUFF[_cnt++] = sumcheck;    
+    BUFF[_cnt++] = addcheck;    
+    
+    HAL_UART_Transmit(&huart4, BUFF, _cnt, 0xFFF);
+}
 
 

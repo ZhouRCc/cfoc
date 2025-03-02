@@ -15,6 +15,7 @@ extern "C"{
 void Ano_Init(void);
 
 void Ano_Send(uint8_t len, ...);
+void Ano_SendFloat(float f1,float f2,float f3,float f4,float f5);
 
 #ifdef __cplusplus
 }

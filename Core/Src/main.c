@@ -27,6 +27,7 @@
 #include "arm_math.h"
 #include "device/ano.h"
 #include "bsp/bsp_delay.h"
+#include "lib/foc_lib.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,7 +48,13 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-float aaa = 0;
+float theta = 0.0f;
+param2_t Ud_Uq;
+param2_t Ualpha_Ubeta;
+param3_t Ua_Ub_Uc;
+param2_t Ialpha_Ibeta;
+param2_t Id_Iq;
+// param3_t Ia_Ib_Ic;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -94,8 +101,10 @@ int main(void)
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
   delay_init();
-  aaa = arm_cos_f32(0.5f);
-  uint32_t bb = 0;
+  
+  Ud_Uq.x1 = 0.0f;
+  Ud_Uq.x2 = 1.0f;
+  // Ano_SendFloat(0.5,1.2,3.4,0.0f,0.0f);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,18 +114,18 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    for(int i = 0; i < 100; i++)
-    {
-      bb ++;
-      Ano_Send(1, bb);
-      delay_ms(10);
-    }
-    for(int i = 0; i < 100; i++)
-    {
-      bb --;
-      Ano_Send(1, bb);
-      delay_ms(10);
-    }
+    theta += 0.01f;
+    if (theta > 6.28f) theta = 0.0f;
+    Inv_Park(&Ud_Uq, &Ualpha_Ubeta, theta);
+    Inv_Clarke(&Ualpha_Ubeta, &Ua_Ub_Uc);
+    Clarke(&Ua_Ub_Uc, &Ialpha_Ibeta);
+    Park(&Ialpha_Ibeta, &Id_Iq, theta);
+    
+    // Ano_SendFloat(Ualpha_Ubeta.x1,Ualpha_Ubeta.x2,theta,0.0f,0.0f);
+    // Ano_SendFloat(Ua_Ub_Uc.x1,Ua_Ub_Uc.x2,Ua_Ub_Uc.x3,0.0f,0.0f);
+    // Ano_SendFloat(Ialpha_Ibeta.x1,Ialpha_Ibeta.x2,0.0f,0.0f,0.0f);
+    // Ano_SendFloat(Id_Iq.x1,Id_Iq.x2,0.0f,0.0f,0.0f);
+    delay_ms(100);
   }
   /* USER CODE END 3 */
 }

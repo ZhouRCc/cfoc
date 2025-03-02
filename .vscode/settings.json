@@ -4,5 +4,5 @@
         "*.c": "c",
         "stdarg.h": "c"
     },
-    "cortex-debug.variableUseNaturalFormat": false
+    "cortex-debug.variableUseNaturalFormat": true
 }
