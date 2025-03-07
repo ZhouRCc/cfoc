@@ -104,6 +104,23 @@ void Inv_Clarke(param2_t* Ualpha_Ubeta, param3_t* Ua_Ub_Uc)
     Ua_Ub_Uc->x3 = -0.5f * Ualpha_Ubeta->x1 - SQRT3_2 * Ualpha_Ubeta->x2;
 }
 
+/**
+ * @brief  反Clarke变换2，将一个二相正交向量转换为三相电流向量
+ *         基本公式为：
+ *                      | Ia |   =   |  1    0       |   x   | I_beta |
+ *                      | Ib |       | -1/2  3^0.5/2 |       | I_alpha |
+ *                      | Ic |       | -1/2 -3^0.5/2 |
+ * @param  Ialpha_Ibeta 被变换的二相正交电流向量
+ * @param  Ia_Ib_Ic 变换得到的三相电流向量
+ * @retval none
+ */
+void Inv_Clarke_2(param2_t* Ualpha_Ubeta, param3_t* Ua_Ub_Uc)
+{
+    Ua_Ub_Uc->x1 = Ualpha_Ubeta->x2;
+    Ua_Ub_Uc->x2 = -0.5f * Ualpha_Ubeta->x2 + SQRT3_2 * Ualpha_Ubeta->x1;
+    Ua_Ub_Uc->x3 = -0.5f * Ualpha_Ubeta->x2 - SQRT3_2 * Ualpha_Ubeta->x1;
+}
+
 
 /**
  * @brief  进行svpwm扇区判断和占空比计算
@@ -119,8 +136,8 @@ uint8_t Svpwm(param2_t* Ualpha_Ubeta,float Udc,float Tpwm, param3_t* Out_ccr)
 /*******************作用时长计算使用的变量**********************/
     float com = (SQRT3 * Tpwm)/Udc;//一个计算作用时长的通用参数 (3^0.5 * Ts)/Udc
     float X , Y , Z , Tx , Ty;/*计算得出的作用时长，对应扇区的Tx Ty为 扇区| 1 | 2 | 3 | 4 | 5 | 6 |
-                                                                           Tx|-Z | Z | X |-X | -Y| Y |
-                                                                           Ty| X | Y |-Y | Z | -Z| -X|*/
+                                                                    |Tx| Z |-Z | X |-X |  Y| -Y |
+                                                                    |Ty| X |-Y | Y |-Z |  Z| -X|*/
     float ta, tb, tc;//暂存占空比
 /********************扇区判断使用的变量*****************/
     uint8_t sector = 0;//扇区
@@ -128,13 +145,13 @@ uint8_t Svpwm(param2_t* Ualpha_Ubeta,float Udc,float Tpwm, param3_t* Out_ccr)
                                                    |   N  | 3 | 1 | 5 | 4 | 6 | 2 |          */
 /*************************anti_clarke计算***********************/
 /*基本公式
- *              |Ua| = |    1         0  |   | Ualpha  |
- *              |Ub|   | -1/2    3^0.5/2 | x | Ubeta   |
+ *              |Ua| = |    1         0  |   | Ubeta  |
+ *              |Ub|   | -1/2    3^0.5/2 | x | Ualpha  |
  *              |Uc|   | -1/2   -3^0.5/2 |
  **/                                                 
-    float A = Ualpha_Ubeta->x1;
-    float B = Ualpha_Ubeta->x2 * SQRT3_2 - Ualpha_Ubeta->x1 * 0.5f;
-    float C = -Ualpha_Ubeta->x2 * SQRT3_2 - Ualpha_Ubeta->x1 * 0.5f;
+    float A = Ualpha_Ubeta->x2;
+    float B = Ualpha_Ubeta->x1 * SQRT3_2 - Ualpha_Ubeta->x2 * 0.5f;
+    float C = -Ualpha_Ubeta->x1 * SQRT3_2 - Ualpha_Ubeta->x2 * 0.5f;
 
     if(A > 0)
     {
@@ -157,33 +174,33 @@ uint8_t Svpwm(param2_t* Ualpha_Ubeta,float Udc,float Tpwm, param3_t* Out_ccr)
     {
     case 1:
         sector = 2;
-        Tx = Z;
-        Ty = Y;
+        Tx = -Z;
+        Ty = -Y;
         break;
     case 2:
         sector = 6;
-        Tx = Y;
+        Tx = -Y;
         Ty = -X;
         break;
     case 3:
         sector = 1;
-        Tx = -Z;
+        Tx = Z;
         Ty = X;
         break;
     case 4:
         sector = 4;
         Tx = -X;
-        Ty = Z;
+        Ty = -Z;
         break;
     case 5:
         sector = 3;
         Tx = X;
-        Ty = -Y;
+        Ty = Y;
         break;
     default:
         sector = 5;
-        Tx = -Y;
-        Ty = -Z;
+        Tx = Y;
+        Ty = Z;
         break; 
     }
     if(Tx + Ty > Tpwm)
