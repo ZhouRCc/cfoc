@@ -100,55 +100,91 @@ void Ano_Send(uint8_t len, ...)
   */
 void Ano_SendFloat(float f1,float f2,float f3,float f4,float f5)
 {
-    int i;
-    uint8_t sumcheck = 0;
-    uint8_t addcheck = 0;
-    uint8_t _cnt = 0;
-    uint16_t datelen = 5 * 4;
+  int i;
+  uint8_t sumcheck = 0;
+  uint8_t addcheck = 0;
+  uint8_t _cnt = 0;
+  uint16_t datelen = 5 * 4;
 
 
 
-    BUFF[_cnt++] = FRAME_HEADER;
-    BUFF[_cnt++] = 0x01;
-    BUFF[_cnt++] = ANO_ADDR;
-    BUFF[_cnt++] = 0xF2; // 灵活格式帧参数id为0xF1-0xFA
-    BUFF[_cnt++] = BYTE0(datelen);
-    BUFF[_cnt++] = BYTE1(datelen); // 数据长度
+  BUFF[_cnt++] = FRAME_HEADER;
+  BUFF[_cnt++] = 0x01;
+  BUFF[_cnt++] = ANO_ADDR;
+  BUFF[_cnt++] = 0xF2; // 灵活格式帧参数id为0xF1-0xFA
+  BUFF[_cnt++] = BYTE0(datelen);
+  BUFF[_cnt++] = BYTE1(datelen); // 数据长度
 
-    BUFF[_cnt++] = BYTE0(f1);
-    BUFF[_cnt++] = BYTE1(f1);
-    BUFF[_cnt++] = BYTE2(f1);
-    BUFF[_cnt++] = BYTE3(f1);
+  BUFF[_cnt++] = BYTE0(f1);
+  BUFF[_cnt++] = BYTE1(f1);
+  BUFF[_cnt++] = BYTE2(f1);
+  BUFF[_cnt++] = BYTE3(f1);
 
-	BUFF[_cnt++] = BYTE0(f2);
-    BUFF[_cnt++] = BYTE1(f2);
-    BUFF[_cnt++] = BYTE2(f2);
-    BUFF[_cnt++] = BYTE3(f2);
+  BUFF[_cnt++] = BYTE0(f2);
+  BUFF[_cnt++] = BYTE1(f2);
+  BUFF[_cnt++] = BYTE2(f2);
+  BUFF[_cnt++] = BYTE3(f2);
 
-	BUFF[_cnt++] = BYTE0(f3);
-    BUFF[_cnt++] = BYTE1(f3);
-    BUFF[_cnt++] = BYTE2(f3);
-    BUFF[_cnt++] = BYTE3(f3);
+  BUFF[_cnt++] = BYTE0(f3);
+  BUFF[_cnt++] = BYTE1(f3);
+  BUFF[_cnt++] = BYTE2(f3);
+  BUFF[_cnt++] = BYTE3(f3);
 
-	BUFF[_cnt++] = BYTE0(f4);
-    BUFF[_cnt++] = BYTE1(f4);
-    BUFF[_cnt++] = BYTE2(f4);
-    BUFF[_cnt++] = BYTE3(f4);
+  BUFF[_cnt++] = BYTE0(f4);
+  BUFF[_cnt++] = BYTE1(f4);
+  BUFF[_cnt++] = BYTE2(f4);
+  BUFF[_cnt++] = BYTE3(f4);
 
-	BUFF[_cnt++] = BYTE0(f5);
-    BUFF[_cnt++] = BYTE1(f5);
-    BUFF[_cnt++] = BYTE2(f5);
-    BUFF[_cnt++] = BYTE3(f5);
+  BUFF[_cnt++] = BYTE0(f5);
+  BUFF[_cnt++] = BYTE1(f5);
+  BUFF[_cnt++] = BYTE2(f5);
+  BUFF[_cnt++] = BYTE3(f5);
 
-    for(i = 0; i < datelen + 6; i++) 
-    {
-        sumcheck += BUFF[i];
-        addcheck += sumcheck;
-    }
-    BUFF[_cnt++] = sumcheck;    
-    BUFF[_cnt++] = addcheck;    
-    
-    HAL_UART_Transmit(&huart4, BUFF, _cnt, 0xFFF);
+  for(i = 0; i < datelen + 6; i++) 
+  {
+      sumcheck += BUFF[i];
+      addcheck += sumcheck;
+  }
+  BUFF[_cnt++] = sumcheck;    
+  BUFF[_cnt++] = addcheck;    
+  
+  HAL_UART_Transmit(&huart4, BUFF, _cnt, 0xFFF);
 }
 
+void Ano_Send_U16(uint16_t f1,uint16_t f2,uint16_t f3,uint16_t f4,uint16_t f5)
+{
+  uint8_t _cnt = 0;
+  uint16_t datelen = 10;
+  uint8_t sumcheck = 0;
+  uint8_t addcheck = 0;
+  int i;
+
+  BUFF[_cnt++] = FRAME_HEADER;
+  BUFF[_cnt++] = 0x01;
+  BUFF[_cnt++] = ANO_ADDR;
+  BUFF[_cnt++] = 0xF3; // 灵活格式帧参数id为0xF1-0xFA
+  BUFF[_cnt++] = BYTE0(datelen);
+  BUFF[_cnt++] = BYTE1(datelen); // 数据长度
+
+  BUFF[_cnt++] = BYTE0(f1);
+  BUFF[_cnt++] = BYTE1(f1);
+  BUFF[_cnt++] = BYTE0(f2);
+  BUFF[_cnt++] = BYTE1(f2);
+  BUFF[_cnt++] = BYTE0(f3);
+  BUFF[_cnt++] = BYTE1(f3);
+  BUFF[_cnt++] = BYTE0(f4);
+  BUFF[_cnt++] = BYTE1(f4);
+  BUFF[_cnt++] = BYTE0(f5);
+  BUFF[_cnt++] = BYTE1(f5);
+
+  for(i = 0; i < datelen + 6; i++) 
+  {
+      sumcheck += BUFF[i];
+      addcheck += sumcheck;
+  }
+  BUFF[_cnt++] = sumcheck;    
+  BUFF[_cnt++] = addcheck;    
+  
+  HAL_UART_Transmit(&huart4, BUFF, _cnt, 0xFFF);
+}
 

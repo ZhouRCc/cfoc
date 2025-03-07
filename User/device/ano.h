@@ -16,6 +16,7 @@ void Ano_Init(void);
 
 void Ano_Send(uint8_t len, ...);
 void Ano_SendFloat(float f1,float f2,float f3,float f4,float f5);
+void Ano_Send_U16(uint16_t f1,uint16_t f2,uint16_t f3,uint16_t f4,uint16_t f5);
 
 #ifdef __cplusplus
 }

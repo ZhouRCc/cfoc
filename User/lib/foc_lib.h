@@ -23,6 +23,12 @@ typedef struct
     float x3;
 }param3_t;
 
+typedef struct
+{
+    uint16_t x1;
+    uint16_t x2;
+    uint16_t x3;
+}param_ccr_t;
 
 typedef struct 
 {
@@ -43,7 +49,7 @@ void Inv_Park(param2_t* Ud_Uq,param2_t* Uapha_Ubeta,float theta);
 void Clarke(param3_t* Ia_Ib_Ic , param2_t* Ialpha_Ibeta);
 void Inv_Clarke(param2_t* Ualpha_Ubeta, param3_t* Ua_Ub_Uc);
 // void foc_step(param2_t* Ud_Uq,float theta,param3_t* Ia_Ib_Ic);
-uint8_t Svpwm(param2_t* Ualpha_Ubeta,float Udc,float Tpwm, param3_t* Out_ccr);
+uint8_t Svpwm(param2_t* Ualpha_Ubeta,float Udc,uint16_t Tpwm, param_ccr_t* Out_ccr);
  
 #ifdef __cplusplus
 }

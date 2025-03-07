@@ -51,9 +51,8 @@
 float theta = 0.0f;
 param2_t Ud_Uq;
 param2_t Ualpha_Ubeta;
-param3_t Ua_Ub_Uc;
-param2_t Ialpha_Ibeta;
-param2_t Id_Iq;
+param_ccr_t Out_ccr;
+uint8_t sector;
 // param3_t Ia_Ib_Ic;
 /* USER CODE END PV */
 
@@ -117,9 +116,8 @@ int main(void)
     theta += 0.01f;
     if (theta > 6.28f) theta = 0.0f;
     Inv_Park(&Ud_Uq, &Ualpha_Ubeta, theta);
-    Inv_Clarke(&Ualpha_Ubeta, &Ua_Ub_Uc);
-    Clarke(&Ua_Ub_Uc, &Ialpha_Ibeta);
-    Park(&Ialpha_Ibeta, &Id_Iq, theta);
+    sector = Svpwm(&Ualpha_Ubeta, 8.0f, 18000, &Out_ccr);
+    Ano_Send_U16(sector, Out_ccr.x1, Out_ccr.x2, Out_ccr.x3, 0);
     
     // Ano_SendFloat(Ualpha_Ubeta.x1,Ualpha_Ubeta.x2,theta,0.0f,0.0f);
     // Ano_SendFloat(Ua_Ub_Uc.x1,Ua_Ub_Uc.x2,Ua_Ub_Uc.x3,0.0f,0.0f);

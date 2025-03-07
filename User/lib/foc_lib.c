@@ -131,14 +131,14 @@ void Inv_Clarke_2(param2_t* Ualpha_Ubeta, param3_t* Ua_Ub_Uc)
  * @return  返回当前扇区
  * @note none
  */
-uint8_t Svpwm(param2_t* Ualpha_Ubeta,float Udc,float Tpwm, param3_t* Out_ccr)
+uint8_t Svpwm(param2_t* Ualpha_Ubeta,float Udc,uint16_t Tpwm, param_ccr_t* Out_ccr)
 {
 /*******************作用时长计算使用的变量**********************/
     float com = (SQRT3 * Tpwm)/Udc;//一个计算作用时长的通用参数 (3^0.5 * Ts)/Udc
     float X , Y , Z , Tx , Ty;/*计算得出的作用时长，对应扇区的Tx Ty为 扇区| 1 | 2 | 3 | 4 | 5 | 6 |
-                                                                    |Tx| Z |-Z | X |-X |  Y| -Y |
-                                                                    |Ty| X |-Y | Y |-Z |  Z| -X|*/
-    float ta, tb, tc;//暂存占空比
+                                                                    |Tx| -Z| Z | X |-X |  Y| Y |
+                                                                    |Ty| X | Y | -Y| Z | -Z| -X|*/
+    uint16_t ta, tb, tc;//暂存占空比
 /********************扇区判断使用的变量*****************/
     uint8_t sector = 0;//扇区
     uint8_t N = 0;/*通过N进行扇区判断         对应值 | 扇区 | 1 | 2 | 3 | 4 | 5 | 6 |
@@ -155,7 +155,7 @@ uint8_t Svpwm(param2_t* Ualpha_Ubeta,float Udc,float Tpwm, param3_t* Out_ccr)
 
     if(A > 0)
     {
-        N += 1;
+        N = 1;
     }
     if(B > 0)
     {
@@ -167,47 +167,56 @@ uint8_t Svpwm(param2_t* Ualpha_Ubeta,float Udc,float Tpwm, param3_t* Out_ccr)
     }
 /****************作用时长计算*****************/
     X = com * A; 
-    Y = com * B;
-    Z = com * C;
+    Y = com * (-C);
+    Z = com * (-B);
 //根据扇区计算Tx，Ty
     switch(N)
     {
     case 1:
         sector = 2;
-        Tx = -Z;
-        Ty = -Y;
+        Tx = Z;
+        Ty = Y;
         break;
     case 2:
         sector = 6;
-        Tx = -Y;
+        Tx = Y;
         Ty = -X;
         break;
     case 3:
         sector = 1;
-        Tx = Z;
+        Tx = -Z;
         Ty = X;
         break;
     case 4:
         sector = 4;
         Tx = -X;
-        Ty = -Z;
+        Ty = Z;
         break;
     case 5:
         sector = 3;
         Tx = X;
-        Ty = Y;
+        Ty = -Y;
+        break;
+    case 6:
+        sector = 5;
+        Tx = -Y;
+        Ty = -Z;
         break;
     default:
-        sector = 5;
-        Tx = Y;
-        Ty = Z;
-        break; 
+        sector = 0;
+        Tx = 0;
+        Ty = 0;
+        break;
     }
     if(Tx + Ty > Tpwm)
     {
-        float total = Tx + Ty;
-        Tx = (Tx / total)*Tpwm;
-        Ty = (Ty / total)*Tpwm;
+        Tx = Tx / (Tx + Ty);
+        Ty = Ty / (Tx + Ty);
+    }
+    else
+    {
+        Tx = Tx;
+        Ty = Ty;
     }
     ta = (Tpwm - Tx - Ty)/4;
     tb = ta + Tx/2;
