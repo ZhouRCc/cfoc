@@ -18,7 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "can.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -53,6 +55,7 @@ param2_t Ud_Uq;
 param2_t Ualpha_Ubeta;
 param_ccr_t Out_ccr;
 uint8_t sector;
+extern float Udc;
 // param3_t Ia_Ib_Ic;
 /* USER CODE END PV */
 
@@ -98,11 +101,32 @@ int main(void)
   MX_GPIO_Init();
   MX_CAN1_Init();
   MX_UART4_Init();
+  MX_ADC1_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   delay_init();
   
   Ud_Uq.x1 = 0.0f;
-  Ud_Uq.x2 = 1.0f;
+  Ud_Uq.x2 = 0.5f;
+  // HAL_TIM_Base_Start(&htim1);
+  
+  // HAL_TIM_OC_Start(&htim1, TIM_CHANNEL_4);
+  HAL_ADCEx_InjectedStart(&hadc1);
+	__HAL_ADC_ENABLE_IT(&hadc1, ADC_IT_JEOC);
+	
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
+  
+  HAL_TIMEx_OCN_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIMEx_OCN_Start(&htim1, TIM_CHANNEL_2);
+  HAL_TIMEx_OCN_Start(&htim1, TIM_CHANNEL_3);
+	
+	__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
+  HAL_GPIO_WritePin(EN_GATE_GPIO_Port, EN_GATE_Pin, GPIO_PIN_SET);
+
+  // HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   // Ano_SendFloat(0.5,1.2,3.4,0.0f,0.0f);
   /* USER CODE END 2 */
 
@@ -116,14 +140,18 @@ int main(void)
     theta += 0.01f;
     if (theta > 6.28f) theta = 0.0f;
     Inv_Park(&Ud_Uq, &Ualpha_Ubeta, theta);
-    sector = Svpwm(&Ualpha_Ubeta, 8.0f, 18000, &Out_ccr);
-    Ano_Send_U16(sector, Out_ccr.x1, Out_ccr.x2, Out_ccr.x3, 0);
+    sector = Svpwm(&Ualpha_Ubeta, Udc, 6720, &Out_ccr);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, Out_ccr.x1);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, Out_ccr.x2);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, Out_ccr.x3);
+    // Ano_Send_U16(sector, Out_ccr.x1, Out_ccr.x2, Out_ccr.x3, 0);
+
     
     // Ano_SendFloat(Ualpha_Ubeta.x1,Ualpha_Ubeta.x2,theta,0.0f,0.0f);
     // Ano_SendFloat(Ua_Ub_Uc.x1,Ua_Ub_Uc.x2,Ua_Ub_Uc.x3,0.0f,0.0f);
     // Ano_SendFloat(Ialpha_Ibeta.x1,Ialpha_Ibeta.x2,0.0f,0.0f,0.0f);
     // Ano_SendFloat(Id_Iq.x1,Id_Iq.x2,0.0f,0.0f,0.0f);
-    delay_ms(100);
+    delay_ms(1);
   }
   /* USER CODE END 3 */
 }
