@@ -39,9 +39,15 @@ typedef struct
 
 typedef struct
 {
-    param2_t Iab;
-    param2_t Iqd;
-    param3_t Iabc;
+    float theta;
+    param2_t Ud_Uq;
+    param2_t Ualpha_Ubeta;
+    param_ccr_t Out_ccr;
+    uint8_t sector;
+    float Udc;
+    param3_t Ia_Ib_Ic;
+    param2_t Ialpha_Ibeta;
+    param2_t Id_Iq;
 }foc_param_t;
 
 void Park(param2_t* Ialpha_Ibeta,param2_t* Id_Iq,float theta);

@@ -50,12 +50,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-float theta = 0.0f;
-param2_t Ud_Uq;
-param2_t Ualpha_Ubeta;
-param_ccr_t Out_ccr;
-uint8_t sector;
-extern float Udc;
+foc_param_t foc_param = {0};
 // param3_t Ia_Ib_Ic;
 /* USER CODE END PV */
 
@@ -106,8 +101,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
   delay_init();
   
-  Ud_Uq.x1 = 0.0f;
-  Ud_Uq.x2 = 0.5f;
+  foc_param.Ud_Uq.x1 = 0.0f;
+  foc_param.Ud_Uq.x2 = 0.5f;
   // HAL_TIM_Base_Start(&htim1);
   
   // HAL_TIM_OC_Start(&htim1, TIM_CHANNEL_4);
@@ -137,13 +132,13 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    theta += 0.01f;
-    if (theta > 6.28f) theta = 0.0f;
-    Inv_Park(&Ud_Uq, &Ualpha_Ubeta, theta);
-    sector = Svpwm(&Ualpha_Ubeta, Udc, 6720, &Out_ccr);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, Out_ccr.x1);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, Out_ccr.x2);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, Out_ccr.x3);
+    foc_param.theta += 0.01f;
+    if (foc_param.theta > 6.28f) foc_param.theta = 0.0f;
+    Inv_Park(&foc_param.Ud_Uq, &foc_param.Ualpha_Ubeta, foc_param.theta);
+    foc_param.sector = Svpwm(&foc_param.Ualpha_Ubeta, foc_param.Udc, 6720, &foc_param.Out_ccr);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, foc_param.Out_ccr.x1);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, foc_param.Out_ccr.x2);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, foc_param.Out_ccr.x3);
     // Ano_Send_U16(sector, Out_ccr.x1, Out_ccr.x2, Out_ccr.x3, 0);
 
     
