@@ -52,7 +52,7 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern foc_param_t foc_param;
+
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -207,17 +207,11 @@ void SysTick_Handler(void)
 void ADC_IRQHandler(void)
 {
   /* USER CODE BEGIN ADC_IRQn 0 */
-  uint32_t adc_value[3] = {0};
+
   /* USER CODE END ADC_IRQn 0 */
   HAL_ADC_IRQHandler(&hadc1);
   /* USER CODE BEGIN ADC_IRQn 1 */
-  adc_value[0] = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1);
-  foc_param.Udc = (adc_value[0] * 3.3f * 11.0f) / 4095.0f;
-  adc_value[1] = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_2);
-  adc_value[2] = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_3);
-  foc_param.Ia_Ib_Ic.x2 = adc_value[1] * 3.3f / 4095.0f / 10 / 0.0005f;
-  foc_param.Ia_Ib_Ic.x3 = adc_value[2] * 3.3f / 4095.0f / 10 / 0.0005f;
-  foc_param.Ia_Ib_Ic.x1 = - foc_param.Ia_Ib_Ic.x2 - foc_param.Ia_Ib_Ic.x3;
+
   /* USER CODE END ADC_IRQn 1 */
 }
 

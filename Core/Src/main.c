@@ -26,10 +26,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "arm_math.h"
 #include "device/ano.h"
 #include "bsp/bsp_delay.h"
-#include "lib/foc_lib.h"
+#include "module/foc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,8 +49,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-foc_param_t foc_param = {0};
-// param3_t Ia_Ib_Ic;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -100,29 +98,8 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   delay_init();
-  
-  foc_param.Ud_Uq.x1 = 0.0f;
-  foc_param.Ud_Uq.x2 = 0.5f;
-  // HAL_TIM_Base_Start(&htim1);
-  
-  // HAL_TIM_OC_Start(&htim1, TIM_CHANNEL_4);
-  HAL_ADCEx_InjectedStart(&hadc1);
-	__HAL_ADC_ENABLE_IT(&hadc1, ADC_IT_JEOC);
-	
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
-  
-  HAL_TIMEx_OCN_Start(&htim1, TIM_CHANNEL_1);
-  HAL_TIMEx_OCN_Start(&htim1, TIM_CHANNEL_2);
-  HAL_TIMEx_OCN_Start(&htim1, TIM_CHANNEL_3);
-	
-	__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
-  HAL_GPIO_WritePin(EN_GATE_GPIO_Port, EN_GATE_Pin, GPIO_PIN_SET);
 
-  // HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-  // Ano_SendFloat(0.5,1.2,3.4,0.0f,0.0f);
+  foc_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -132,21 +109,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    foc_param.theta += 0.01f;
-    if (foc_param.theta > 6.28f) foc_param.theta = 0.0f;
-    Inv_Park(&foc_param.Ud_Uq, &foc_param.Ualpha_Ubeta, foc_param.theta);
-    foc_param.sector = Svpwm(&foc_param.Ualpha_Ubeta, foc_param.Udc, 6720, &foc_param.Out_ccr);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, foc_param.Out_ccr.x1);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, foc_param.Out_ccr.x2);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, foc_param.Out_ccr.x3);
-    // Ano_Send_U16(sector, Out_ccr.x1, Out_ccr.x2, Out_ccr.x3, 0);
-
-    
-    // Ano_SendFloat(Ualpha_Ubeta.x1,Ualpha_Ubeta.x2,theta,0.0f,0.0f);
-    // Ano_SendFloat(Ua_Ub_Uc.x1,Ua_Ub_Uc.x2,Ua_Ub_Uc.x3,0.0f,0.0f);
-    // Ano_SendFloat(Ialpha_Ibeta.x1,Ialpha_Ibeta.x2,0.0f,0.0f,0.0f);
-    // Ano_SendFloat(Id_Iq.x1,Id_Iq.x2,0.0f,0.0f,0.0f);
-    delay_ms(1);
+    foc_run();
   }
   /* USER CODE END 3 */
 }
