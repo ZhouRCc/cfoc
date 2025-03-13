@@ -13,6 +13,7 @@ public:
     void foc_calc_adc();
     void foc_offset_calibration();
     void foc_step();
+    void send_data();
     bool flag_offset;
 private:
 float theta;

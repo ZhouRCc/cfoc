@@ -98,13 +98,13 @@ void Ano_Send(uint8_t len, ...)
   * @note           float数据被乘以100后再转成int
   * @retval         none
   */
-void Ano_SendFloat(float f1,float f2,float f3,float f4,float f5)
+void Ano_SendFloat(float f1,float f2,float f3)
 {
   int i;
   uint8_t sumcheck = 0;
   uint8_t addcheck = 0;
   uint8_t _cnt = 0;
-  uint16_t datelen = 5 * 4;
+  uint16_t datelen = 3 * 4;
 
 
 
@@ -130,16 +130,6 @@ void Ano_SendFloat(float f1,float f2,float f3,float f4,float f5)
   BUFF[_cnt++] = BYTE2(f3);
   BUFF[_cnt++] = BYTE3(f3);
 
-  BUFF[_cnt++] = BYTE0(f4);
-  BUFF[_cnt++] = BYTE1(f4);
-  BUFF[_cnt++] = BYTE2(f4);
-  BUFF[_cnt++] = BYTE3(f4);
-
-  BUFF[_cnt++] = BYTE0(f5);
-  BUFF[_cnt++] = BYTE1(f5);
-  BUFF[_cnt++] = BYTE2(f5);
-  BUFF[_cnt++] = BYTE3(f5);
-
   for(i = 0; i < datelen + 6; i++) 
   {
       sumcheck += BUFF[i];
@@ -148,7 +138,7 @@ void Ano_SendFloat(float f1,float f2,float f3,float f4,float f5)
   BUFF[_cnt++] = sumcheck;    
   BUFF[_cnt++] = addcheck;    
   
-  HAL_UART_Transmit(&huart4, BUFF, _cnt, 0xFFF);
+  HAL_UART_Transmit_IT(&huart4, BUFF, _cnt);
 }
 
 void Ano_Send_U16(uint16_t f1,uint16_t f2,uint16_t f3,uint16_t f4,uint16_t f5)

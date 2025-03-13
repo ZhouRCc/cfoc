@@ -109,7 +109,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    foc_run();
+    foc_send();
+    delay_ms(2);
   }
   /* USER CODE END 3 */
 }

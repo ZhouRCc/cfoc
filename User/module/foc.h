@@ -6,7 +6,7 @@ extern "C"{
 
 void foc_init(void);
 
-void foc_run(void);
+void foc_send(void);
 
 #ifdef __cplusplus
 }
