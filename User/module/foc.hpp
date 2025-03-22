@@ -34,6 +34,6 @@ float theta;
     uint16_t offset_cnt;
 
     LowPassFilter current_filter;
-    pid_type_def current_pid;
+    pid_type_def current_pid[2];
 };
 

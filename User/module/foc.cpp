@@ -6,7 +6,7 @@
 
 Foc foc;
 
-float CURRENT_PID[3] = {1.0f, 0.1f, 0.0f};
+float CURRENT_PID[3] = {0.1f, 0.001f, 0.0f};
 
 void foc_init(void){
 
@@ -39,14 +39,15 @@ void foc_send(void)
 Foc::Foc()
 {
     Id_Iq_set.x1 = 0.0f;
-    Id_Iq_set.x2 = 0.2f;
+    Id_Iq_set.x2 = 0.3f;
     Ub_offset = 0;
     Uc_offset = 0;
     offset_cnt = 0;
     flag_offset = false;
 
     LowPassFilter_Init(&current_filter, 25000 , 2500);
-    PID_init(&current_pid, CURRENT_PID, 6.0f, 6.0f);
+    PID_init(&current_pid[0], CURRENT_PID, 6.0f, 6.0f);
+    PID_init(&current_pid[1], CURRENT_PID, 6.0f, 6.0f);
 }
 
 
@@ -111,8 +112,8 @@ void Foc::foc_step()
     Id_Iq.x1 = Id_Iq_tmp.x1;
     Id_Iq.x2 = Id_Iq_tmp.x2;
 
-    Ud_Uq.x1 = PID_calc(&current_pid, Id_Iq.x1, Id_Iq_set.x1);
-    Ud_Uq.x2 = PID_calc(&current_pid, Id_Iq.x2, Id_Iq_set.x2);
+    Ud_Uq.x1 = PID_calc(&current_pid[0], Id_Iq.x1, Id_Iq_set.x1);
+    Ud_Uq.x2 = PID_calc(&current_pid[1], Id_Iq.x2, Id_Iq_set.x2);
 
     Inv_Park(&Ud_Uq, &Ualpha_Ubeta, theta);
     sector = Svpwm(&Ualpha_Ubeta, Udc, 6720, &Out_ccr);
