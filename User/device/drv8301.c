@@ -28,31 +28,37 @@ DRV8301_SPIConfig_t drv8301_config = {
  * @return 寄存器的值（11位）
  */
 uint16_t DRV8301_ReadRegister(uint8_t reg) {
-    uint8_t tx_data[2] = { (uint8_t)((DRV8301_READ_CMD | (reg << 11)) >> 8), 
-                           (uint8_t)(DRV8301_READ_CMD | (reg << 11)) };
-    uint8_t dummy_rx[2] = {0, 0};
-    uint8_t rx_data[2] = {0, 0};
-    uint8_t tx_dummy[2] = {0xFF, 0xFF};  // 第二次传输填充数据
+    // 构造控制字（读命令 + 寄存器地址）
+    uint16_t controlword = DRV8301_READ_CMD | (reg << 11);
+    uint16_t recbuff = 0x0000;  // 用于存储接收到的数据
 
+    // 拉低 CS 引脚
     DRV8301_CS_LOW();
-    delay_us(20);
+    delay_us(1);  // 等待 CS 稳定
 
-    // 第一次 SPI 传输（发送读取命令，不关心返回值）
-    HAL_SPI_TransmitReceive(drv8301_config.hspi, tx_data, dummy_rx, 2, HAL_MAX_DELAY);
-    
+    // 第一次 SPI 传输：发送读命令
+    HAL_SPI_Transmit(drv8301_config.hspi, (uint8_t*)&controlword, 1, HAL_MAX_DELAY);
+
+    // 拉高 CS 引脚
     DRV8301_CS_HIGH();
+    delay_us(1);  // 等待 CS 稳定
 
-    delay_ms(1);
-    
+    // 拉低 CS 引脚
     DRV8301_CS_LOW();
-    delay_us(20);
-    // 第二次 SPI 传输（发送 0x0000，接收真正的数据）
-    HAL_SPI_TransmitReceive(drv8301_config.hspi, tx_dummy, rx_data, 2, HAL_MAX_DELAY);
+    delay_us(1);  // 等待 CS 稳定
+
+    // 第二次 SPI 传输：发送 0x0000，接收真正的数据
+    uint16_t zerobuff = 0x0000;  // 发送 0x0000
+    HAL_SPI_TransmitReceive(drv8301_config.hspi, (uint8_t*)&zerobuff, (uint8_t*)&recbuff, 1, HAL_MAX_DELAY);
+
+    // 拉高 CS 引脚
     DRV8301_CS_HIGH();
-    
-    // 组合 16 位数据
-    return ((uint16_t)rx_data[0] << 8 | rx_data[1]) & 0x07FF; // 只保留 11 位有效数据
+    delay_us(1);  // 等待 CS 稳定
+
+    // 返回接收到的数据（只保留 11 位有效数据）
+    return recbuff & 0x07FF;
 }
+
 
 
 /**
@@ -63,30 +69,29 @@ uint16_t DRV8301_ReadRegister(uint8_t reg) {
  */
 uint16_t DRV8301_WriteRegister(uint8_t reg, uint16_t data) {
     uint16_t tx_word = DRV8301_WRITE_CMD | (reg << 11) | (data & 0x07FF); // 构造16位写命令
-    uint8_t tx_data[2] = { (uint8_t)(tx_word >> 8), (uint8_t)(tx_word & 0xFF) }; // 高字节在前
-    uint8_t rx_data[2] = {0};  // 接收数据
-    uint8_t tx_dummy[2] = {0xFF, 0xFF}; // 发送填充数据
-    uint8_t rx_dummy[2] = {0}; // 接收状态寄存器
+    uint8_t rx_data = 0;  // 接收数据
+    uint8_t tx_dummy = 0x0000; // 发送填充数据
+    uint8_t rx_dummy = 0; // 接收状态寄存器
 
     DRV8301_CS_LOW();
-    delay_us(20);
+    delay_us(1);
 
     // 第一次传输：发送写命令
-    HAL_SPI_TransmitReceive(drv8301_config.hspi, tx_data, rx_dummy, 2, HAL_MAX_DELAY);
+    HAL_SPI_TransmitReceive(drv8301_config.hspi, (uint8_t*)&tx_word, (uint8_t*)&rx_dummy, 1, HAL_MAX_DELAY);
 
     DRV8301_CS_HIGH();
 
     delay_ms(1);
     
     DRV8301_CS_LOW();
-    delay_us(20);
+    delay_us(1);
 
     // 第二次传输：接收状态寄存器1的值
-    HAL_SPI_TransmitReceive(drv8301_config.hspi, tx_dummy, rx_data, 2, HAL_MAX_DELAY);
+    HAL_SPI_TransmitReceive(drv8301_config.hspi, (uint8_t*)&tx_dummy, (uint8_t*)&rx_data, 1, HAL_MAX_DELAY);
 
     DRV8301_CS_HIGH(); // 拉高CS引脚
 
-    return ((uint16_t)rx_data[0] << 8) | rx_data[1]; // 返回16位状态寄存器值
+    return rx_data & 0x07FF; // 返回16位状态寄存器值
 }
 
 
