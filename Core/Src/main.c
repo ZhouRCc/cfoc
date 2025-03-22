@@ -51,7 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint16_t rev = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -104,8 +104,6 @@ int main(void)
 
   foc_init();
 
-  rev = DRV8301_GetDeviceID();
-  DRV8301_SetCurrentGain(GAIN_80_V_V);
   /* USER CODE END 2 */
 
   /* Infinite loop */

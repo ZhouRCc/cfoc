@@ -3,6 +3,8 @@
 #include "module/foc.h"
 
 #include "lib/foc_lib.h"
+#include "lib/filter.h"
+#include "lib/pid.h"
 
 #include "main.h"
 
@@ -17,6 +19,7 @@ public:
     bool flag_offset;
 private:
 float theta;
+    param2_t Id_Iq_set;
     param2_t Ud_Uq;        
     param2_t Ualpha_Ubeta;  
     param_ccr_t Out_ccr;    //三个pwm的ccr值
@@ -29,5 +32,8 @@ float theta;
     uint32_t Ub_offset;
     uint32_t Uc_offset;
     uint16_t offset_cnt;
+
+    LowPassFilter current_filter;
+    pid_type_def current_pid;
 };
 

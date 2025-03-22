@@ -25,6 +25,11 @@ typedef struct {
     float y1, y2; // 输出延迟
 } BiquadFilter;
 
+void LowPassFilter_Init(LowPassFilter *lpf, float sampleRate, float fc);
+float LowPassFilter_Calc(LowPassFilter *lpf, float input) ;
+void biquadLowFilter_Init(BiquadFilter* filter, float cutoffFreq, float sampleRate);
+void biquadHighFilter_Init(BiquadFilter* filter, float cutoffFreq, float sampleRate);
+float computeFilter(BiquadFilter* filter, float input);
 
 #ifdef __cplusplus
 }

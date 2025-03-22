@@ -8,16 +8,16 @@
   * @param[in]      fc: 截止频率 (Hz)
   * @retval         无
   */
- void LowPassFilter_Init(LowPassFilter *lpf, float sampleRate, float fc) 
- {
-     lpf->sampleRate = sampleRate;
-     lpf->fc = fc;
-     float RC = 1.0 / (2 * M_PI * fc); // 时间常数
-     float dt = 1.0 / sampleRate;      // 采样时间
-     lpf->a_coef = dt / (RC + dt);     // 计算系数 a
-     lpf->b_coef = 1.0 - lpf->a_coef;  // 计算系数 b
-     lpf->last_output = 0.0;           // 初始化上一次的输出值
- }
+void LowPassFilter_Init(LowPassFilter *lpf, float sampleRate, float fc) 
+{
+    lpf->sampleRate = sampleRate;
+    lpf->fc = fc;
+    float RC = 1.0 / (2 * M_PI * fc); // 时间常数
+    float dt = 1.0 / sampleRate;      // 采样时间
+    lpf->a_coef = dt / (RC + dt);     // 计算系数 a
+    lpf->b_coef = 1.0 - lpf->a_coef;  // 计算系数 b
+    lpf->last_output = 0.0;           // 初始化上一次的输出值
+}
 
 /**
   * @brief          计算一阶低通滤波器的输出
@@ -25,13 +25,13 @@
   * @param[in]      input: 输入信号
   * @retval         滤波后的输出信号
   */
- float LowPassFilter_Calc(LowPassFilter *lpf, float input) 
- {
-     // 计算当前输出值
-     lpf->output = lpf->a_coef * input + lpf->b_coef * lpf->last_output;
-     lpf->last_output = lpf->output; // 更新上一次的输出值
-     return lpf->output;
- }
+float LowPassFilter_Calc(LowPassFilter *lpf, float input) 
+{
+    // 计算当前输出值
+    lpf->output = lpf->a_coef * input + lpf->b_coef * lpf->last_output;
+    lpf->last_output = lpf->output; // 更新上一次的输出值
+    return lpf->output;
+}
 
 
 /**
