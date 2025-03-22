@@ -2,7 +2,8 @@
     "cortex-debug.gdbPath": "E:/stm_env/armgcc/bin/arm-none-eabi-gdb",
     "files.associations": {
         "*.c": "c",
-        "stdarg.h": "c"
+        "stdarg.h": "c",
+        "drv8301.h": "c"
     },
-    "cortex-debug.variableUseNaturalFormat": true
+    "cortex-debug.variableUseNaturalFormat": false
 }

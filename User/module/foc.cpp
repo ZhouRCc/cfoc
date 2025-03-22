@@ -43,11 +43,14 @@ Foc::Foc()
     offset_cnt = 0;
     flag_offset = false;
 }
-uint32_t adc_value[3] = {0};
-float Ub_tmp = 0.0f;
-float Uc_tmp = 0.0f;
+
+
 void Foc::foc_calc_adc()
 {
+    uint32_t adc_value[3] = {0};
+    float Ub_tmp = 0.0f;
+    float Uc_tmp = 0.0f;
+    
     adc_value[0] = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1);
     Udc = (adc_value[0] * 3.3f * 11.0f) / 4095.0f;
     adc_value[1] = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_2);

@@ -20,6 +20,7 @@
 #include "main.h"
 #include "adc.h"
 #include "can.h"
+#include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -29,6 +30,7 @@
 #include "device/ano.h"
 #include "bsp/bsp_delay.h"
 #include "module/foc.h"
+#include "device/drv8301.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,7 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint16_t rev = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,10 +98,14 @@ int main(void)
   MX_UART4_Init();
   MX_ADC1_Init();
   MX_TIM1_Init();
+  MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
   delay_init();
 
   foc_init();
+
+  rev = DRV8301_GetDeviceID();
+  DRV8301_SetCurrentGain(GAIN_80_V_V);
   /* USER CODE END 2 */
 
   /* Infinite loop */
